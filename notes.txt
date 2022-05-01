@@ -1,0 +1,60 @@
+The ACME pet clinic and grooming services Web Application final checking
+the shop offers a wide range of services like breed specific haircuts, and health checkups.  A resident veterinarian provides excellent care for your fur babies.  your pet's wellbeing is their main concern.
+Functional Requirements
+
+🐻‍❄️ mp1 create migration script for the creation of database tables. 
+
+🐻‍❄️ Mp2 create customer CRUDRestore functions with photo uploads. The show() method will view the details of the customer 20pts
+
+🐻‍❄️ mp3 create pet CRUDR functions with photo uploads The show() method will view the details of the pet 20pts
+
+🐻‍❄️ mp4 create employee CRUDR functions with photo uploads The show() method will view the details of the employee. 20pts
+
+🐻‍❄️ mp5 create pet grooming services CRUDR functions with photo uploads of sample haircuts. The show() method will view the details of the services offered 20pts
+
+🐻‍❄️ mp6 create table seeders for parent tables. use faker to generate dummy data 20pts
+php
+--------------------------------------------------------------
+
+🐻‍❄️ unit 1 create a script for pet health consultation or checkup. the vet evaluates the pet's condition and enters that information to the app. the vet can choose from a predefined list of common diseases or pet injuries. vet observations/comments are also recorded. use transactions 15pts
+
+🐻‍❄️ unit 2 create an authentication function for employees. CRUD pages and search functions are only accessible to authenticated users. Do not use Basic auth scaffolding. 15pts
+
+🐻‍❄️ quiz 1 create a script that will search for a pet and show it's medical history. a pet can have multiple checkups. 10pts
+
+🐻‍❄️ quiz 2 create a script that will search for a customer and view their transaction history. 10pts 
+
+🐻‍❄️ quiz 3 create a script that will let guests comment on grooming services. 10pts 
+
+🐻‍❄️ quiz 4 User Interface Design and Navigation 10pts
+
+----------------------------------------------------------------
+Term Test 30pts
+🐻‍❄️ 1. create CRUD scripts for pet grooming transaction. 
+ use transactions 20pts
+2. A receipt will be generated after every transaction. the receipt will be shown on a separate page. 5pts
+Project Requirements may be updated or revised.
+
+
+
+
+
+
+public function getReceipt()
+    {
+        $servicetrans = Servicetrans::max('id');
+        $customers = DB::table('services_groomings')
+        ->join('servicetrans','servicetrans.id','=', 'services_groomings.servicetrans_id')
+        ->leftjoin('groomings','groomings.id','=','services_groomings.groomings_id')
+        ->rightjoin('pets', 'pets.id','=','services_groomings.pets_id')
+        ->leftjoin('employees', 'employees.id','=','services_groomings.employees_id')
+        ->select('servicetrans.id', 'servicetrans.Date', 'pets.Name' , 'groomings.description','groomings.price', 'employees.FName', 'employees.LName')
+        ->where('servicetrans.id', DB::raw("(select max(servicetrans.id) from servicetrans)"))
+        ->get();
+        return view("transaction.receipt", [
+            "customers" => $customers,
+        ]);
+    }
+
+
+Route::get("transaction/receipt", 'App\Http\Controllers\TransactionController@getReceipt')->name("transaction.receipt");
